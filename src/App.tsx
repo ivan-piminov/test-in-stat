@@ -1,26 +1,49 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {useState} from 'react';
+import {CommonTasks} from "./mst";
+import {observer} from "mobx-react";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+interface Props {
+    rootTree: CommonTasks
 }
 
+const App = observer((props: Props) => {
+
+    const [newTaskName, setNewTaskName] = useState("")
+
+    console.log(props.rootTree.tasks)
+
+    const {filteredTasks, addNewTask, changeStatus, deleteTask} = props.rootTree
+    const filteredTasksVisible = props.rootTree.filteredTasks(newTaskName)
+
+    const newTask = (newTaskName: string) => {
+        if (newTaskName) {
+            addNewTask(newTaskName);
+        } else return null
+    }
+
+    return (
+        <>
+            <input type="text" placeholder='введите название задачи'
+                   value={newTaskName} onChange={(e) => {
+                setNewTaskName(e.target.value);
+                filteredTasks(newTaskName)
+            }}
+            />
+            <button onClick={() => {
+                newTask(newTaskName)
+                setNewTaskName('')
+            }}>добавить задачу
+            </button>
+            {filteredTasksVisible.map(item => {
+                return <div key={item.id}>
+                    <input type="checkbox" checked={item.isDone} onChange={() => changeStatus(item.id)}/>
+                    <span>{item.taskName}</span>
+                    <button onClick={() => deleteTask(item.id)}>X</button>
+                </div>
+            })}
+        </>
+    );
+})
 export default App;
+
