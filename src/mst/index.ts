@@ -12,6 +12,7 @@ export const CommonTasksModel = types.model('CommonTasks', {
     .actions(self => ({
         addNewTask(taskName: string) {
             const id = Math.random()
+            console.log(taskName)
             self.tasks.push({id, taskName, isDone: false})
         },
         deleteTask(id: number) {
